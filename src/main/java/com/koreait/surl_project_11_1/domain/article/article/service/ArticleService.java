@@ -2,6 +2,7 @@ package com.koreait.surl_project_11_1.domain.article.article.service;
 
 import com.koreait.surl_project_11_1.domain.article.article.entity.Article;
 import com.koreait.surl_project_11_1.domain.article.article.repository.ArticleRepository;
+import com.koreait.surl_project_11_1.domain.member.member.entity.Member;
 import com.koreait.surl_project_11_1.global.reData.RsData;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,10 @@ public class ArticleService {
     // - 게시글 생성에 대한 결과 메세지
     // - 결과 코드
     @Transactional
-    public RsData<Article> write(String title, String body) {
+    public RsData<Article> write(Member member, String title, String body) {
         Article article = Article
                 .builder()
+                .member(member)
                 .title(title)
                 .body(body)
                 .build();

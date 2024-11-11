@@ -1,4 +1,4 @@
-package com.koreait.surl_project_11_1.global.eceptions;
+package com.koreait.surl_project_11_1.global.exceptions;
 
 import com.koreait.surl_project_11_1.global.reData.RsData;
 import com.koreait.surl_project_11_1.standard.dto.Empty;

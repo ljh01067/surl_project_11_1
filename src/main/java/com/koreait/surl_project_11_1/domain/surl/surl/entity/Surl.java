@@ -1,20 +1,25 @@
 package com.koreait.surl_project_11_1.domain.surl.surl.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.koreait.surl_project_11_1.domain.member.member.entity.Member;
+import com.koreait.surl_project_11_1.global.jpa.entity.BaseTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import lombok.*;
 
-import java.time.LocalDateTime;
+import static lombok.AccessLevel.PROTECTED;
+
+@Entity
 @Getter
 @Setter
 @Builder
-public class Surl {
-    private long id;
-    @Builder.Default
-    private LocalDateTime createDate = LocalDateTime.now();
-    @Builder.Default
-    private LocalDateTime modifyDate = LocalDateTime.now();
+@AllArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
+public class Surl extends BaseTime {
+    @ManyToOne
+    @JsonIgnore
+    private Member author;
+
     private String body;
     private String url;
     @Setter(AccessLevel.NONE)
