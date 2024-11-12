@@ -20,6 +20,7 @@ public class Surl extends BaseTime {
     @JsonIgnore
     private Member author;
 
+
     private String body;
     private String url;
     @Setter(AccessLevel.NONE)
