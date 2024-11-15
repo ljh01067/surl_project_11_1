@@ -29,7 +29,7 @@ public class ArticleService {
     public RsData<Article> write(Member member, String title, String body) {
         Article article = Article
                 .builder()
-                .member(member)
+                .author(member)
                 .title(title)
                 .body(body)
                 .build();

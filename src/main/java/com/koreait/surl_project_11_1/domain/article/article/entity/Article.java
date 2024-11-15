@@ -21,5 +21,5 @@ public class Article extends BaseTime {
     private String body;
 
     @ManyToOne
-    private Member member;
+    private Member author;
 }

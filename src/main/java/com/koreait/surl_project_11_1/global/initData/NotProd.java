@@ -45,10 +45,10 @@ public class NotProd {
         Member memberUser1 = memberService.findByUsername("user1").get();
         Member memberUser2 = memberService.findByUsername("user2").get();
 
-        Article article1 = articleService.write(memberUser1,"제목 1", "내용 1").getData();
-        Article article2 = articleService.write(memberUser1,"제목 2", "내용 2").getData();
+        Article article1 = articleService.write(memberUser1, "제목 1", "내용 1").getData();
+        Article article2 = articleService.write(memberUser1, "제목 2", "내용 2").getData();
 
-        Article article3 = articleService.write(memberUser2,"제목 3", "내용 3").getData();
-        Article article4 = articleService.write(memberUser2,"제목 4", "내용 4").getData();
+        Article article3 = articleService.write(memberUser2, "제목 3", "내용 3").getData();
+        Article article4 = articleService.write(memberUser2, "제목 4", "내용 4").getData();
     }
 }
