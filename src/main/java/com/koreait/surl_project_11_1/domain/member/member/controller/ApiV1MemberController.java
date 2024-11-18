@@ -9,13 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 @Slf4j
@@ -24,21 +23,31 @@ public class ApiV1MemberController {
 
     @AllArgsConstructor
     @Getter
-    public static class MemberJoinReqBody{
-        @NotBlank(message = "username 입력하세요")
+    public static class MemberJoinReqBody {
+        @NotBlank
         private String username;
-        @NotBlank(message = "password 입력하세요")
+        @NotBlank
         private String password;
-        @NotBlank(message = "nickname 입력하세요")
+        @NotBlank
         private String nickname;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberJoinRespBody {
+        Member item;
     }
 
     // POST /api/v1/members
     @PostMapping("")
-    @ResponseBody
-    public RsData<Member> join(
+    public RsData<MemberJoinRespBody> join(
             @RequestBody @Valid MemberJoinReqBody requestBody
     ) {
-        return memberService.join(requestBody.username, requestBody.password, requestBody.nickname);
+        RsData<Member> joinRs = memberService.join(requestBody.username, requestBody.password, requestBody.nickname);
+
+        return joinRs.newDataOf(
+                new MemberJoinRespBody(joinRs.getData())
+        );
     }
+
 }
