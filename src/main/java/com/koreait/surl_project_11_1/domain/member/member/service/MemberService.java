@@ -5,6 +5,7 @@ import com.koreait.surl_project_11_1.domain.member.member.repository.MemberRepos
 import com.koreait.surl_project_11_1.global.exceptions.GlobalException;
 import com.koreait.surl_project_11_1.global.reData.RsData;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Optional<Member> findByUsername(String username) {
@@ -30,7 +32,7 @@ public class MemberService {
 
         Member member = Member.builder()
                 .username(username)
-                .password(password)
+                .password(passwordEncoder.encode(password))
                 .nickname(nickname)
                 .build();
         memberRepository.save(member);
@@ -44,5 +46,9 @@ public class MemberService {
 
     public long count() {
         return memberRepository.count();
+    }
+
+    public boolean matchPassword(String password, String encodedPassword) {
+        return passwordEncoder.matches(password, encodedPassword);
     }
 }
