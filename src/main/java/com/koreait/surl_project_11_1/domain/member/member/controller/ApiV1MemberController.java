@@ -1,10 +1,14 @@
 package com.koreait.surl_project_11_1.domain.member.member.controller;
 
+import com.koreait.surl_project_11_1.domain.auth.auth.service.AuthService;
+import com.koreait.surl_project_11_1.domain.auth.auth.service.AuthTokenService;
 import com.koreait.surl_project_11_1.domain.member.member.dto.MemberDto;
 import com.koreait.surl_project_11_1.domain.member.member.entity.Member;
 import com.koreait.surl_project_11_1.domain.member.member.service.MemberService;
+import com.koreait.surl_project_11_1.global.app.AppConfig;
 import com.koreait.surl_project_11_1.global.exceptions.GlobalException;
 import com.koreait.surl_project_11_1.global.reData.RsData;
+import com.koreait.surl_project_11_1.global.rq.Rq;
 import com.koreait.surl_project_11_1.standard.dto.Empty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -14,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import com.koreait.surl_project_11_1.global.rq.Rq;
 
 @RestController
 @RequestMapping("/api/v1/members")
@@ -24,6 +27,8 @@ import com.koreait.surl_project_11_1.global.rq.Rq;
 public class ApiV1MemberController {
     private final MemberService memberService;
     private final Rq rq;
+    private final AuthService authService;
+    private final AuthTokenService authTokenService;
 
     @AllArgsConstructor
     @Getter
@@ -78,11 +83,13 @@ public class ApiV1MemberController {
             @RequestBody @Valid MemberLoginReqBody requestBody
     ) {
         Member member = memberService.findByUsername(requestBody.username).orElseThrow(() -> new GlobalException("401-1", "해당 회원은 없다"));
-        if (!member.getPassword().equals(requestBody.password)) {
+        if (!memberService.matchPassword(requestBody.password, member.getPassword())) {
             throw new GlobalException("401-2", "비번 틀림");
         }
-        rq.setCookie("actorUsername", member.getUsername());
-        rq.setCookie("actorPassword", member.getPassword());
+        String accessToken = authTokenService.genToken(member, AppConfig.getAccessTokenExpirationSec());
+        rq.setCookie("accessToken", accessToken);
+        rq.setCookie("refreshToken", member.getRefreshToken());
+
         return RsData.of(
                 "200-1", "로그인 성공", new MemberLoginRespBody(new MemberDto(member))
         );
