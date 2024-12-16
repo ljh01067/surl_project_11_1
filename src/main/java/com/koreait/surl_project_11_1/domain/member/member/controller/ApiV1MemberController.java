@@ -11,6 +11,7 @@ import com.koreait.surl_project_11_1.global.reData.RsData;
 import com.koreait.surl_project_11_1.global.rq.Rq;
 import com.koreait.surl_project_11_1.standard.dto.Empty;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -18,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,29 +29,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
+@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "ApiMemberController", description = "회원 CRUD 컨트롤러")
 public class ApiV1MemberController {
     private final MemberService memberService;
     private final Rq rq;
     private final AuthService authService;
     private final AuthTokenService authTokenService;
-
-    @AllArgsConstructor
-    @Getter
-    public static class MemberJoinReqBody {
-        @NotBlank
-        private String username;
-        @NotBlank
-        private String password;
-        @NotBlank
-        private String nickname;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class MemberJoinRespBody {
-        MemberDto item;
-    }
 
     // POST /api/v1/members
     @PostMapping("")
@@ -67,21 +53,6 @@ public class ApiV1MemberController {
                         )
                 )
         );
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class MemberLoginReqBody {
-        @NotBlank
-        private String username;
-        @NotBlank
-        private String password;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class MemberLoginRespBody {
-        MemberDto item;
     }
 
     @PostMapping("/login")
@@ -113,10 +84,62 @@ public class ApiV1MemberController {
     public RsData<Empty> logout() {
         // 쿠키 삭제
 
-        rq.removeCookie("actorUsername");
-        rq.removeCookie("actorPassword");
+        rq.removeCookie("accessToken");
+        rq.removeCookie("refreshToken");
 
         return RsData.OK;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberMeRespBody {
+        @NonNull
+        MemberDto item;
+    }
+
+    @GetMapping("/me")
+    @Transactional
+    @Operation(summary = "내 정보", description = "현재 로그인한 회원의 정보")
+    public RsData<MemberMeRespBody> getMe() {
+        return RsData.of(
+                new MemberMeRespBody(
+                        new MemberDto(rq.getMember())
+                )
+        );
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberJoinReqBody {
+        @NotBlank
+        private String username;
+        @NotBlank
+        private String password;
+        @NotBlank
+        private String nickname;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberJoinRespBody {
+        @NonNull
+        MemberDto item;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberLoginReqBody {
+        @NotBlank
+        private String username;
+        @NotBlank
+        private String password;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class MemberLoginRespBody {
+        @NonNull
+        MemberDto item;
     }
 
 }

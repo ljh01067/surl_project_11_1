@@ -11,12 +11,15 @@ import com.koreait.surl_project_11_1.global.reData.RsData;
 import com.koreait.surl_project_11_1.global.rq.Rq;
 import com.koreait.surl_project_11_1.standard.dto.Empty;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,27 +31,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
+@SecurityRequirement(name = "bearerAuth")
+@Tag(name = "ApiSurlController", description = "Surl CRUD 컨트롤러")
 public class ApiV1SurlController {
 
     private final Rq rq;
     private final SurlService surlService;
     private final AuthService authService;
     private final MemberService memberService;
-
-    @AllArgsConstructor
-    @Getter
-    public static class SurlAddReqBody {
-        @NotBlank
-        private String body;
-        @NotBlank
-        private String url;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class SurlAddRespBody {
-        private SurlDto item;
-    }
 
     @PostMapping("")
     @ResponseBody
@@ -66,12 +56,6 @@ public class ApiV1SurlController {
                         new SurlDto(addRs.getData())
                 )
         );
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class SurlGetRespBody {
-        private SurlDto item;
     }
 
     // /api/v1/surls/{id}
@@ -96,12 +80,6 @@ public class ApiV1SurlController {
         );
     }
 
-    @AllArgsConstructor
-    @Getter
-    public static class SurlGetItemsRespBody {
-        private List<SurlDto> items;
-    }
-
     @GetMapping("")
     @Operation(summary = "다건조회")
     public RsData<SurlGetItemsRespBody> getItems() {
@@ -122,7 +100,6 @@ public class ApiV1SurlController {
         );
     }
 
-
     @DeleteMapping("/{id}")
     @Transactional
     @Operation(summary = "삭제")
@@ -136,21 +113,6 @@ public class ApiV1SurlController {
         surlService.delete(surl);
 
         return RsData.OK;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class SurlModifyReqBody {
-        @NotBlank
-        private String body;
-        @NotBlank
-        private String url;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public static class SurlModifyRespBody {
-        private SurlDto item;
     }
 
     @PutMapping("/{id}")
@@ -173,6 +135,50 @@ public class ApiV1SurlController {
                         new SurlDto(modifyRs.getData())
                 )
         );
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlAddReqBody {
+        private String body;
+        @NotBlank
+        private String url;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlAddRespBody {
+        @NonNull
+        private SurlDto item;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlGetRespBody {
+        @NonNull
+        private SurlDto item;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlGetItemsRespBody {
+        @NonNull
+        private List<SurlDto> items;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlModifyReqBody {
+        private String body;
+        @NotBlank
+        private String url;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class SurlModifyRespBody {
+        @NonNull
+        private SurlDto item;
     }
 
 }

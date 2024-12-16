@@ -8,6 +8,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Map;
 
@@ -19,8 +21,10 @@ public class AuthTokenService {
                 .add("id", member.getId())
                 .add("username", member.getUsername())
                 .build();
+
         Date issuedAt = new Date();
         Date expiration = new Date(issuedAt.getTime() + expireSeconds * 1000);
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(issuedAt)
@@ -28,6 +32,7 @@ public class AuthTokenService {
                 .signWith(SignatureAlgorithm.HS256, AppConfig.getJwtSecretKey())
                 .compact();
     }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(AppConfig.getJwtSecretKey()).build().parseClaimsJws(token);
@@ -36,14 +41,23 @@ public class AuthTokenService {
             return false;
         }
     }
+
     public Map<String, Object> getDataFrom(String token) {
         Claims payload = Jwts.parser()
                 .setSigningKey(AppConfig.getJwtSecretKey())
                 .build()
                 .parseClaimsJws(token).getPayload();
+
         return Map.of(
                 "id", payload.get("id", Integer.class),
                 "username", payload.get("username", String.class)
         );
+    }
+
+    public String genRefreshToken() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[10];
+        random.nextBytes(bytes);
+        return Base64.getUrlEncoder().encodeToString(bytes);
     }
 }

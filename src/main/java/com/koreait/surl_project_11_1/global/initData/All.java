@@ -2,6 +2,7 @@ package com.koreait.surl_project_11_1.global.initData;
 
 import com.koreait.surl_project_11_1.domain.member.member.entity.Member;
 import com.koreait.surl_project_11_1.domain.member.member.service.MemberService;
+import com.koreait.surl_project_11_1.global.app.AppConfig;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,11 @@ import org.springframework.core.annotation.Order;
 @RequiredArgsConstructor
 @Slf4j
 public class All {
+    private final MemberService memberService;
     @Lazy
     @Autowired
     private All self;
-    private final MemberService memberService;
+
     @Bean
     @Order(3)
     public ApplicationRunner initAll() {
@@ -27,13 +29,21 @@ public class All {
             self.work1();
         };
     }
+
     @Transactional
     public void work1() {
+
         log.debug("initAll started");
+
         if (memberService.count() > 0) return;
+
         Member memberSystem = memberService.join("system", "1234", "시스템").getData();
+        if (AppConfig.isNotProd()) memberSystem.setRefreshToken(memberSystem.getUsername());
         Member memberAdmin = memberService.join("admin", "1234", "관리자").getData();
+        if (AppConfig.isNotProd()) memberAdmin.setRefreshToken(memberAdmin.getUsername());
         Member member1 = memberService.join("user1", "1234", "회원 1").getData();
+        if (AppConfig.isNotProd()) member1.setRefreshToken(member1.getUsername());
         Member member2 = memberService.join("user2", "1234", "회원 2").getData();
+        if (AppConfig.isNotProd()) member2.setRefreshToken(member2.getUsername());
     }
 }

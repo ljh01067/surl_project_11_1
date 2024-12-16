@@ -25,6 +25,8 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.POST, "/api/*/members", "/api/*/members/login").permitAll()
+                                .requestMatchers(HttpMethod.DELETE, "/api/*/members/logout")
+                                .permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
@@ -43,7 +45,7 @@ public class SecurityConfig {
                         csrf ->
                                 csrf.disable()
                 ) // 타임리프, MPA에서는 csrf를 사용함 // REST API 방식에서는 끈다
-                .cors(Customizer.withDefaults()) //6.1이상부터는 걍 쓰면 됨
+                .cors(Customizer.withDefaults()) // 6.1 이상부터는 걍 쓰면 됨
                 .formLogin(formLogin ->
                         formLogin.permitAll()
                 )
